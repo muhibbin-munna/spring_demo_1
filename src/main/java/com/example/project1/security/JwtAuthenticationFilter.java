@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static com.example.project1.config.WebSecurityConfig.WHITE_LIST_URLS;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -44,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         logger.info(" Header :  {}", requestHeader);
         String username = null;
         String token = null;
+
         if (requestHeader != null) {
             try {
                 username = this.jwtHelper.getUsernameFromToken(requestHeader);
@@ -56,10 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An unexpected error occurred");
             }
-
-
-        } else {
-            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authorization header not found");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -85,9 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         }
-
         filterChain.doFilter(request, response);
-
 
     }
 
